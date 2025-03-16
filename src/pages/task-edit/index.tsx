@@ -7,7 +7,7 @@ import { getTaskPath, TASKS_PATH } from "../../app/paths";
 import AppBreadcrumbs from "../../components/breadcrumbs";
 import { EditTaskRequest } from "../../types/api-tasks";
 import { taskLevel } from "../../services/api/tasks";
-import { IconFileDescription, IconInfoCircle, IconStar } from "@tabler/icons-react";
+import { IconFileDescription, IconInfoCircle } from "@tabler/icons-react";
 import MDEditor from "@uiw/react-md-editor";
 
 
@@ -74,11 +74,8 @@ const TaskEditPage = () => {
                     <Tabs.Tab value="general" rightSection={<IconInfoCircle size={16} />}>
                         Общее
                     </Tabs.Tab>
-                    <Tabs.Tab value="description" rightSection={<IconFileDescription size={16} />}>
-                        Описание
-                    </Tabs.Tab>
-                    <Tabs.Tab value="criteria" rightSection={<IconStar size={14} />}>
-                        Критерии
+                    <Tabs.Tab value="system" rightSection={<IconFileDescription size={16} />}>
+                        Системная инструкция
                     </Tabs.Tab>
                 </Tabs.List>
 
@@ -199,7 +196,7 @@ const TaskEditPage = () => {
                     </Stack>
                 </Tabs.Panel>
                 
-                <Tabs.Panel value="description" p="sm">
+                <Tabs.Panel value="system" p="sm">
                     {
                         isTaskLoading
                         ? (
@@ -216,10 +213,6 @@ const TaskEditPage = () => {
                         )
                     }
                     
-                </Tabs.Panel>
-
-                <Tabs.Panel value="criteria">
-                    {null}
                 </Tabs.Panel>
             </Tabs>
             <Group>

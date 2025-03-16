@@ -5,12 +5,8 @@ import {
     getTaskById, 
     editTaskById, 
     removeTaskById, 
-    addCriteriaToTask, 
-    getCriteriaByTaskId, 
-    editCriteriaById, 
-    removeCriteriaById 
 } from "../services/api/tasks";
-import { CreateTaskRequest, EditTaskRequest, AddCriteriaRequest, EditCriteriaRequest, TaskResponse, CriteriaResponse } from "../types/api-tasks";
+import { CreateTaskRequest, EditTaskRequest, TaskResponse } from "../types/api-tasks";
 import { notifyError, showSuccess } from "../utils/notifications";
 import { useNavigate } from "react-router";
 import { getTaskPath, TASKS_PATH } from "../app/paths";
@@ -75,53 +71,11 @@ const useRemoveTask = () => {
     });
 };
 
-const useCriteriaByTaskId = (taskId: string | undefined) => {
-    return useQuery({
-        queryKey: ["task", taskId, "criteria"],
-        queryFn: () => getCriteriaByTaskId(taskId as string),
-        staleTime: 1000 * 60 * 5,
-        enabled: !!taskId
-    });
-};
-
-const useAddCriteriaToTask = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (criteria: {data: AddCriteriaRequest, taskId: string}) => addCriteriaToTask(criteria.taskId, criteria.data),
-        onSuccess: (data: CriteriaResponse) => {
-            queryClient.invalidateQueries({ queryKey: ["task", data.taskId, "criteria"]});
-        },
-    });
-};
-
-const useEditCriteria = (taskId: string, criteriaId: string) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (criteriaData: EditCriteriaRequest) => editCriteriaById(taskId, criteriaId, criteriaData),
-        onSuccess: (data: CriteriaResponse) => {
-            queryClient.invalidateQueries({ queryKey: ["task", data.taskId, "criteria"]});
-        },
-    });
-};
-
-const useRemoveCriteria = (taskId: string | undefined) => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (data: {criteriaId: string}) => removeCriteriaById(taskId as string, data.criteriaId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["task", taskId, "criteria"]});
-        },
-    });
-};
 
 export { 
     useTasks, 
     useTaskById, 
     useCreateTask, 
     useEditTask, 
-    useRemoveTask, 
-    useCriteriaByTaskId, 
-    useAddCriteriaToTask, 
-    useEditCriteria, 
-    useRemoveCriteria 
+    useRemoveTask,
 };

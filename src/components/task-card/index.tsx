@@ -12,7 +12,7 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({task}) => {
     let navigate = useNavigate();
     return (
-        <Card shadow="md" mih={"150px"} h="100%" padding="md" radius="md" withBorder style={{cursor: "pointer"}} onClick={() => task && navigate(getTaskPath(task.taskId))}>
+        <Card shadow="md" mih={"120px"} padding="md" radius="md" withBorder style={{cursor: "pointer"}} onClick={() => task && navigate(getTaskPath(task.taskId))}>
             {
                 task
                 ? (
@@ -30,21 +30,6 @@ const TaskCard: React.FC<TaskCardProps> = ({task}) => {
                     </Group>
                 )
             }
-            
-            <Space h={4} />
-
-            {
-                task
-                ? (
-                    <Text fz={16} lineClamp={2}>
-                        {task.description}
-                    </Text>
-                ): (
-                    <Group h={50}>
-                        <Skeleton height={44} radius="md" /> 
-                    </Group>
-                )
-            }   
 
             <Space h={8} />
 

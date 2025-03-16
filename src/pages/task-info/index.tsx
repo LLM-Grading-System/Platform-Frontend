@@ -1,21 +1,30 @@
 import { useParams, useNavigate } from "react-router";
-import { useTaskById, useRemoveTask, useCriteriaByTaskId  } from "../../hooks/tasks";
-import { Stack, Title, Skeleton, Group, Text, Badge, Button, Modal, Tabs, Menu, ActionIcon } from "@mantine/core";
+import { useTaskById, useRemoveTask  } from "../../hooks/tasks";
+import { Stack, Title, Skeleton, Group, Text, Badge, Button, Modal, Tabs, Menu, ActionIcon, Anchor } from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks"
 import { IconFileDescription, IconInfoCircle, IconPencil, IconSettings, IconStar, IconTrashX } from "@tabler/icons-react";
-import { getEditTaskPath, TASKS_PATH } from "../../app/paths";
+import { getEditTaskPath, LOGIN_PATH, TASKS_PATH } from "../../app/paths";
 import AppBreadcrumbs from "../../components/breadcrumbs";
 import MDEditor from "@uiw/react-md-editor";
+import { AxiosError } from "axios";
+import { useEffect } from "react";
 
 
 
 const TaskInfoPage = () => {
     const {taskId} = useParams();
-    const {data: task, isLoading: isTaskLoading, isError: isTaskError} = useTaskById(taskId);
-    const {data: criteria, isLoading: isCriteriaLoading} = useCriteriaByTaskId(taskId);
+    const {data: task, isLoading: isTaskLoading, isError: isTaskError, error: taskError} = useTaskById(taskId);
     const {mutateAsync: removeTask, isPending: isRemoveLoading} = useRemoveTask();
     const [opened, { open, close }] = useDisclosure(false);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isTaskError) {
+            if ((taskError as AxiosError).response?.status === 401) {
+                navigate(LOGIN_PATH);
+            }
+        }
+    }, [isTaskError, taskError, navigate]); 
 
     if (isTaskError){
         return (
@@ -92,11 +101,11 @@ const TaskInfoPage = () => {
                     <Tabs.Tab value="general" rightSection={<IconInfoCircle size={16} />}>
                         Общее
                     </Tabs.Tab>
-                    <Tabs.Tab value="description" rightSection={<IconFileDescription size={16} />}>
-                        Описание
+                    <Tabs.Tab value="system" rightSection={<IconFileDescription size={16} />}>
+                        Системная инструкция
                     </Tabs.Tab>
-                    <Tabs.Tab value="criteria" rightSection={<IconStar size={14} />}>
-                        Критерии
+                    <Tabs.Tab value="statistics" rightSection={<IconStar size={14} />}>
+                        Статистика
                     </Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value="general" p="sm">
@@ -111,6 +120,19 @@ const TaskInfoPage = () => {
                         isTaskLoading
                         ? <Group h={24}><Skeleton w={"250px"} height={18} radius="md" /></Group>
                         : <Text>Статус: {task && task.isDraft && "черновик" || "опубликован"}</Text>
+                    } 
+
+                    {
+                        isTaskLoading
+                        ? <Group h={24}><Skeleton w={"250px"} height={18} radius="md" /></Group>
+                        : (
+                            <Text>
+                                Репозиторий: <Anchor href={task && task.githubRepoUrl} target="_blank" underline="always">
+                                    GitHub
+                                </Anchor>
+                            </Text>
+                            
+                        )
                     } 
 
                     {
@@ -135,7 +157,7 @@ const TaskInfoPage = () => {
                     </Stack>
                 </Tabs.Panel>
 
-                <Tabs.Panel value="description" p="sm">
+                <Tabs.Panel value="system" p="sm">
                     {
                         isTaskLoading
                         ? <Group h={24}><Skeleton w={"600px"} height={18} radius="md" /></Group>
@@ -143,18 +165,8 @@ const TaskInfoPage = () => {
                     }
                 </Tabs.Panel>
 
-                <Tabs.Panel value="criteria" p="sm">
-                {
-                    isCriteriaLoading
-                    ? (
-                        <Skeleton w={"150px"} height={20} radius="md" />
-                    ): criteria && criteria.length > 0
-                        ? criteria.map(criterion => (
-                            <div>
-                                {criterion.description}
-                            </div>
-                        )): <Text>Критерии не заданы</Text>
-                }
+                <Tabs.Panel value="statistics" p="sm">
+                    <Text>Статистика</Text>
                 </Tabs.Panel>
             </Tabs>
             
