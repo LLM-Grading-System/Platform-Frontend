@@ -2,20 +2,67 @@ import { useParams, useNavigate } from "react-router";
 import { useTaskById, useRemoveTask  } from "../../hooks/tasks";
 import { Stack, Title, Skeleton, Group, Text, Badge, Button, Modal, Tabs, Menu, ActionIcon, Anchor } from "@mantine/core";
 import {useDisclosure} from "@mantine/hooks"
-import { IconFileDescription, IconInfoCircle, IconPencil, IconSettings, IconStar, IconTrashX } from "@tabler/icons-react";
+import { IconFileDescription, IconInfoCircle, IconPencil, IconSettings, IconStar, IconTrashX, IconBrandGithub } from "@tabler/icons-react";
 import { getEditTaskPath, LOGIN_PATH, TASKS_PATH } from "../../app/paths";
 import AppBreadcrumbs from "../../components/breadcrumbs";
 import MDEditor from "@uiw/react-md-editor";
 import { AxiosError } from "axios";
-import { useEffect } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
+import { useReadme } from "../../hooks/github";
+import mermaid from "mermaid";
+import { getCodeString } from "rehype-rewrite";
 
 
+const randomid = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
+
+const Code = ({ inline, children = [], className, ...props }) => {
+  const demoid = useRef(`dome${randomid()}`);
+  const [container, setContainer] = useState(null);
+  const isMermaid =
+    className && /^language-mermaid/.test(className.toLocaleLowerCase());
+  const code = children
+    ? getCodeString(props.node.children)
+    : children[0] || "";
+
+  useEffect(() => {
+    if (container && isMermaid && demoid.current && code) {
+      mermaid
+        .render(demoid.current, code)
+        .then(({ svg, bindFunctions }) => {
+          container.innerHTML = svg;
+          if (bindFunctions) {
+            bindFunctions(container);
+          }
+        })
+        .catch((error) => {
+          console.log("error:", error);
+        });
+    }
+  }, [container, isMermaid, code, demoid]);
+
+  const refElement = useCallback((node) => {
+    if (node !== null) {
+      setContainer(node);
+    }
+  }, []);
+
+  if (isMermaid) {
+    return (
+      <>
+        <code id={demoid.current} style={{ display: "none" }} />
+        <code className={className} ref={refElement} data-name="mermaid" />
+      </>
+    );
+  }
+  return <code className={className}>{children}</code>;
+};
 
 const TaskInfoPage = () => {
     const {taskId} = useParams();
     const {data: task, isLoading: isTaskLoading, isError: isTaskError, error: taskError} = useTaskById(taskId);
     const {mutateAsync: removeTask, isPending: isRemoveLoading} = useRemoveTask();
     const [opened, { open, close }] = useDisclosure(false);
+    const {data: readme, isLoading: isReadmeLoading, isError: isReadmeError} = useReadme(task && task.githubRepoUrl);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -101,6 +148,9 @@ const TaskInfoPage = () => {
                     <Tabs.Tab value="general" rightSection={<IconInfoCircle size={16} />}>
                         Общее
                     </Tabs.Tab>
+                    <Tabs.Tab value="readme" rightSection={<IconBrandGithub size={16} />}>
+                        README.md
+                    </Tabs.Tab>
                     <Tabs.Tab value="system" rightSection={<IconFileDescription size={16} />}>
                         Системная инструкция
                     </Tabs.Tab>
@@ -137,6 +187,13 @@ const TaskInfoPage = () => {
 
                     {
                         isTaskLoading
+                        ? <Group h={24}><Skeleton w={"250px"} height={18} radius="md" /></Group>
+                        : task && task.ideas !== "" && <Text>Идея: {task && task.ideas}</Text> 
+                    } 
+
+
+                    {
+                        isTaskLoading
                         ? (
                             <Group>
                                 <Skeleton w={"150px"} height={20} radius="md" />
@@ -158,15 +215,38 @@ const TaskInfoPage = () => {
                 </Tabs.Panel>
 
                 <Tabs.Panel value="system" p="sm">
+                    <Stack gap={"xs"} maw={"600px"}>
                     {
                         isTaskLoading
                         ? <Group h={24}><Skeleton w={"600px"} height={18} radius="md" /></Group>
-                        : task && (<MDEditor.Markdown source={task.description} />)
+                        : task && task.systemInstructions
+                            ? (<MDEditor.Markdown source={task.systemInstructions} />)
+                            : <Text>Не задана</Text>
                     }
+                    </Stack>
+                </Tabs.Panel>
+                
+                <Tabs.Panel value="readme" p="sm">
+                    <Stack gap={"xs"} maw={"600px"}>
+                    {
+                        isReadmeError && (
+                            <Text>
+                                Во время загрузки произошла ошибка, необходимо проверить существование репозитория и название файла README.md
+                            </Text>
+                        )
+                    } 
+                    {
+                        isReadmeLoading
+                        ? <Group h={24}><Skeleton w={"600px"} height={18} radius="md" /></Group>
+                        : task && (<MDEditor.Markdown source={readme} components={{code: Code}}/>)
+                    }
+                    </Stack>
                 </Tabs.Panel>
 
                 <Tabs.Panel value="statistics" p="sm">
-                    <Text>Статистика</Text>
+                    <Stack gap={"xs"} maw={"600px"}>
+                        <Text>Статистика</Text>
+                    </Stack>
                 </Tabs.Panel>
             </Tabs>
             
