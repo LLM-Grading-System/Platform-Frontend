@@ -1,6 +1,6 @@
 import { useParams } from "react-router";
 import { useTaskById, useEditTask  } from "../../hooks/tasks";
-import { Stack, Title, Skeleton, Group, Text, Button, TextInput, Select, TagsInput, Switch, Tabs } from "@mantine/core";
+import { Stack, Title, Skeleton, Group, Text, Button, TextInput, Select, TagsInput, Switch, Tabs, Textarea } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { showWarning } from "../../utils/notifications";
 import { getTaskPath, TASKS_PATH } from "../../app/paths";
@@ -9,6 +9,7 @@ import { EditTaskRequest } from "../../types/api-tasks";
 import { taskLevel } from "../../services/api/tasks";
 import { IconFileDescription, IconInfoCircle } from "@tabler/icons-react";
 import MDEditor from "@uiw/react-md-editor";
+import { SystemInstructionTemplate } from "../../app/settings";
 
 
 const TaskEditPage = () => {
@@ -31,15 +32,17 @@ const TaskEditPage = () => {
             showWarning("Название не может быть пустым");
             return;
         }
-        if (currentTask.description === ""){
-            showWarning("Описание не может быть пустым");
-            return;
-        }
         if (currentTask.githubRepoUrl === ""){
             showWarning("Ссылка на GitHub-репозиторий не может быть пустой");
             return;
         }
         updateTask({taskId: fetchedTask?.taskId, data: currentTask});
+    }
+
+    const handleGenerateTemplate = () => {
+        if (currentTask !== null) {
+            setCurrentTask(({...currentTask, systemInstructions: SystemInstructionTemplate}))
+        }
     }
 
     if (isError){
@@ -157,6 +160,31 @@ const TaskEditPage = () => {
                                     <Group h={24}>
                                         <Skeleton w={"100px"} height={18} radius="md" /> 
                                     </Group>
+                                    <Group h={56}>
+                                        <Skeleton w={"600px"} height={50} radius="md" /> 
+                                    </Group>
+                                </div>
+                            ): currentTask && (
+                                <Textarea
+                                    variant="filled"
+                                    flex={1}
+                                    value={currentTask.ideas}
+                                    onChange={e => setCurrentTask({...currentTask, ideas: e.currentTarget.value})}
+                                    label={<Text>Идеи</Text>}
+                                    placeholder="Вставьте ссылку сюда"
+                                    resize="vertical"
+                                    minRows={3}
+                                />
+                            )
+                        }
+
+                        {
+                            isTaskLoading
+                            ? (
+                                <div>
+                                    <Group h={24}>
+                                        <Skeleton w={"100px"} height={18} radius="md" /> 
+                                    </Group>
                                     <Group h={35}>
                                         <Skeleton w={"600px"} height={32} radius="md" /> 
                                     </Group>
@@ -197,6 +225,7 @@ const TaskEditPage = () => {
                 </Tabs.Panel>
                 
                 <Tabs.Panel value="system" p="sm">
+                    <Stack>
                     {
                         isTaskLoading
                         ? (
@@ -204,15 +233,21 @@ const TaskEditPage = () => {
                                 <Skeleton height={500} radius="md" /> 
                             </Group>
                         ): currentTask && (
-                            <MDEditor 
-                                preview="edit" 
-                                height={500} 
-                                value={currentTask.description} 
-                                onChange={value => setCurrentTask({...currentTask, description: value || ""})} 
-                            />
+                            <>
+                                <Button w={"240px"} variant="light" onClick={handleGenerateTemplate}>
+                                    Сгенерировать по шаблону
+                                </Button>
+                                <MDEditor 
+                                    preview="edit" 
+                                    height={500} 
+                                    value={currentTask.systemInstructions} 
+                                    onChange={value => setCurrentTask({...currentTask, systemInstructions: value || ""})} 
+                                />
+                            </>
+                            
                         )
                     }
-                    
+                    </Stack>
                 </Tabs.Panel>
             </Tabs>
             <Group>

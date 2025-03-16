@@ -1,11 +1,9 @@
 import { SuccessResponse } from "../../types/api-general";
-import  {CreateTaskRequest, TaskResponse, EditCriteriaRequest, CriteriaResponse, AddCriteriaRequest, EditTaskRequest} from "../../types/api-tasks";
+import  {CreateTaskRequest, TaskResponse, EditTaskRequest} from "../../types/api-tasks";
 import { axiosInstance } from "./axios-config";
 
 const TASKS = "/api/tasks";
 const TASK_BY_ID = (taskId: string) => `/api/tasks/${taskId}`;
-const TASK_CRITERIA = (taskId: string) => `/api/tasks/${taskId}/criteria`;
-const TASK_CRITERION_BY_ID = (taskId: string, criterionId: string) => `/api/tasks/${taskId}/criteria/${criterionId}`;
 
 
 const taskLevel = {
@@ -40,24 +38,5 @@ const removeTaskById = async (taskId: string): Promise<SuccessResponse> => {
     return response.data;
 };
 
-const addCriteriaToTask = async (taskId: string, criteriaData: AddCriteriaRequest): Promise<CriteriaResponse> => {
-    const response = await axiosInstance.post<CriteriaResponse>(TASK_CRITERIA(taskId), criteriaData);
-    return response.data;
-};
 
-const getCriteriaByTaskId = async (taskId: string): Promise<CriteriaResponse[]> => {
-    const response = await axiosInstance.get<CriteriaResponse[]>(TASK_CRITERIA(taskId));
-    return response.data;
-};
-
-const editCriteriaById = async (taskId: string, criteriaId: string, criteriaData: EditCriteriaRequest): Promise<CriteriaResponse> => {
-    const response = await axiosInstance.put<CriteriaResponse>(TASK_CRITERION_BY_ID(taskId, criteriaId), criteriaData);
-    return response.data;
-};
-
-const removeCriteriaById = async (taskId: string, criteriaId: string): Promise<SuccessResponse> => {
-    const response = await axiosInstance.delete(TASK_CRITERION_BY_ID(taskId, criteriaId));
-    return response.data;
-};
-
-export { createTask, removeCriteriaById, editCriteriaById, getCriteriaByTaskId, getAllTasks, addCriteriaToTask, removeTaskById, editTaskById, getTaskById, taskLevel };
+export { createTask, getAllTasks, removeTaskById, editTaskById, getTaskById, taskLevel };

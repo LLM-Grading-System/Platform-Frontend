@@ -12,7 +12,7 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({task}) => {
     let navigate = useNavigate();
     return (
-        <Card shadow="md" mih={"120px"} padding="md" radius="md" withBorder style={{cursor: "pointer"}} onClick={() => task && navigate(getTaskPath(task.taskId))}>
+        <Card shadow="sm" mih={"120px"} padding="md" radius="md" withBorder style={{cursor: "pointer"}} onClick={() => task && navigate(getTaskPath(task.taskId))}>
             {
                 task
                 ? (

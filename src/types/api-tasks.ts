@@ -1,6 +1,7 @@
 interface CreateTaskRequest {
     name: string;
-    description: string;
+    systemInstructions: string;
+    ideas: string;
     githubRepoUrl: string;
     level: string;
     tags: string[];
@@ -10,7 +11,8 @@ interface CreateTaskRequest {
 interface TaskResponse {
     taskId: string;
     name: string;
-    description: string;
+    systemInstructions: string;
+    ideas: string;
     githubRepoUrl: string;
     level: string;
     tags: string[];
@@ -19,7 +21,8 @@ interface TaskResponse {
 
 interface EditTaskRequest {
     name: string;
-    description: string;
+    systemInstructions: string;
+    ideas: string;
     githubRepoUrl: string;
     level: string;
     tags: string[];

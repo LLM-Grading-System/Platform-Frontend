@@ -1,22 +1,23 @@
 import { Stack, Title, TextInput, Textarea, Text, Button, Group, TagsInput, Select, Switch, Tabs } from "@mantine/core";
 import { useState } from "react";
-import MDEditor, { selectWord } from "@uiw/react-md-editor";
+import MDEditor from "@uiw/react-md-editor";
 import { useCreateTask } from "../../hooks/tasks";
 import { showWarning } from "../../utils/notifications";
 import { CreateTaskRequest } from "../../types/api-tasks";
 import { taskLevel } from "../../services/api/tasks";
-import { IconFileDescription, IconInfoCircle, IconSettings } from "@tabler/icons-react";
+import { IconFileDescription, IconInfoCircle } from "@tabler/icons-react";
+import { SystemInstructionTemplate } from "../../app/settings";
 
 
 const initialModel: CreateTaskRequest ={
     name: "",
-    description: "",
+    systemInstructions: "",
+    ideas: "",
     tags: [],
     githubRepoUrl: "",
     level: taskLevel.low,
     isDraft: true
 }
-
 
 const TaskCreatePage = () => {
     const [currentTask, setCurrentTask] = useState<CreateTaskRequest>(initialModel);
@@ -27,15 +28,15 @@ const TaskCreatePage = () => {
             showWarning("Название не может быть пустым");
             return;
         }
-        if (currentTask.description === ""){
-            showWarning("Описание не может быть пустым");
-            return;
-        }
         if (currentTask.githubRepoUrl === ""){
             showWarning("Ссылка на GitHub-репозиторий не может быть пустой");
             return;
         }
         createTask(currentTask);
+    }
+
+    const handleGenerateTemplate = () => {
+        setCurrentTask(task => ({...task, systemInstructions: SystemInstructionTemplate}))
     }
 
     return (
@@ -47,8 +48,8 @@ const TaskCreatePage = () => {
                     <Tabs.Tab value="base" leftSection={<IconInfoCircle size={16} />}>
                         Общее
                     </Tabs.Tab>
-                    <Tabs.Tab value="description" leftSection={<IconFileDescription size={16} />}>
-                        Описание
+                    <Tabs.Tab value="system" leftSection={<IconFileDescription size={16} />}>
+                        Системная инструкция
                     </Tabs.Tab>
                 </Tabs.List>
 
@@ -81,6 +82,17 @@ const TaskCreatePage = () => {
                             onChange={value => value && setCurrentTask({...currentTask, level: value})} 
                         />
 
+                        <Textarea
+                            variant="filled"
+                            flex={1}
+                            value={currentTask.ideas}
+                            onChange={e => setCurrentTask({...currentTask, ideas: e.currentTarget.value})}
+                            label={<Text>Идеи</Text>}
+                            placeholder="Вставьте ссылку сюда"
+                            resize="vertical"
+                            minRows={3}
+                        />
+
                         <TagsInput
                             variant="filled"
                             label={<Text>Теги</Text>}
@@ -102,8 +114,13 @@ const TaskCreatePage = () => {
                     </Stack>
                 </Tabs.Panel>
 
-                <Tabs.Panel value="description" p="sm">
-                    <MDEditor preview="edit" height={500} value={currentTask.description} onChange={value => setCurrentTask({...currentTask, description: value || ""})} />
+                <Tabs.Panel value="system" p="sm">
+                    <Stack>
+                        <Button w={"240px"} variant="light" onClick={handleGenerateTemplate}>
+                            Сгенерировать по шаблону
+                        </Button>
+                        <MDEditor preview="edit" height={500} value={currentTask.systemInstructions} onChange={value => setCurrentTask({...currentTask, systemInstructions: value || ""})} />
+                    </Stack>
                 </Tabs.Panel>
             </Tabs>
 
