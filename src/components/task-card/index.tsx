@@ -1,5 +1,5 @@
 import {useNavigate} from "react-router";
-import { Card, Title, Text, Badge, Skeleton, Group, Space } from '@mantine/core';
+import { Card, Title, Badge, Skeleton, Group, Space } from '@mantine/core';
 import { TaskResponse } from '../../types/api-tasks';
 import { getTaskPath } from "../../app/paths";
 

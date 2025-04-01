@@ -15,7 +15,7 @@ import { getCodeString } from "rehype-rewrite";
 
 const randomid = () => parseInt(String(Math.random() * 1e15), 10).toString(36);
 
-const Code = ({ inline, children = [], className, ...props }) => {
+const Code = ({ children = [], className = "", ...props }) => {
   const demoid = useRef(`dome${randomid()}`);
   const [container, setContainer] = useState(null);
   const isMermaid =
@@ -67,7 +67,7 @@ const TaskInfoPage = () => {
 
     useEffect(() => {
         if (isTaskError) {
-            if ((taskError as AxiosError).response?.status === 401) {
+            if (taskError.response?.status === 401) {
                 navigate(LOGIN_PATH);
             }
         }
