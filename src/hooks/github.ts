@@ -5,8 +5,8 @@ import { getReadmeByGitHubURL } from "../services/api/github";
 const useReadme = (taskGitHubURL: string | undefined) => {
   return useQuery(
         {
-            queryKey: ["me"],
-            queryFn: () => getReadmeByGitHubURL(taskGitHubURL as string),
+            queryKey: ["readme", taskGitHubURL],
+            queryFn: () => taskGitHubURL && getReadmeByGitHubURL(taskGitHubURL),
             staleTime: 1000 * 60 * 10,
             enabled: taskGitHubURL !== undefined
         }
