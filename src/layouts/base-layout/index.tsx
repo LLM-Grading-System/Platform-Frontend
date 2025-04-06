@@ -5,8 +5,8 @@ import {
     IconLogout,
     IconSun,
     IconMoon,
-    IconHexagonPlus2,
     IconStack2,
+    IconMailQuestion,
   } from '@tabler/icons-react';
 import { Outlet } from "react-router";
 import classes from "./index.module.css";
@@ -14,13 +14,13 @@ import { Container, ScrollArea, Stack } from "@mantine/core";
 import NavbarLink from "../../components/navbar-link";
 import { useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
 import TokenService from "../../services/localStorage/auth-token";
-import { HOME_PATH, LOGIN_PATH, NEW_TASK_PATH, TASKS_PATH } from "../../app/paths";
+import { COMPLAINTS_PATH, HOME_PATH, LOGIN_PATH, TASKS_PATH } from "../../app/paths";
 
 
 const mockdata = [
     { icon: IconHome2, label: 'Главная', path: HOME_PATH, index: true },
     { icon: IconStack2, label: 'Задачи', path: TASKS_PATH, index: false},
-    { icon: IconHexagonPlus2,  label: 'Создать задачу', path: NEW_TASK_PATH, index: false},
+    { icon: IconMailQuestion, label: 'Жалобы', path: COMPLAINTS_PATH, index: false }
   ];
 
 interface BaseLayoutProps {
@@ -54,12 +54,12 @@ const BaseLayout: React.FC<BaseLayoutProps> = () => {
             <div className={classes.main}>
                 <nav className={classes.navbar}>
                     <div className={classes.navbarMain}>
-                        <Stack justify="center" gap={0}>
+                        <Stack justify="center" gap={"xs"}>
                         {links}
                         </Stack>
                     </div>
 
-                    <Stack justify="center" gap={0}>
+                    <Stack justify="center" gap={"xs"}>
                         <NavbarLink 
                             icon={computedColorScheme === "light"? IconSun: IconMoon} 
                             label="Сменить тему" 

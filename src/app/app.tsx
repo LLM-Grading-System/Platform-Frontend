@@ -7,6 +7,7 @@ import { Notifications } from '@mantine/notifications';
 import AppRouter from './router'
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
+import 'mantine-datatable/styles.layer.css';
 import "@uiw/react-md-editor/markdown-editor.css";
 import "@uiw/react-markdown-preview/markdown.css";
 import './styles/reset.css'

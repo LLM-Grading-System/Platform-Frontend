@@ -1,21 +1,24 @@
 import React from "react";
-import { Grid, Skeleton, Title, Text, Group } from '@mantine/core';
+import { Grid, Title, Text, Group, Button } from '@mantine/core';
 import TaskCard from "../../components/task-card";
 import { useTasks } from "../../hooks/tasks";
+import {useNavigate} from "react-router";
+import { NEW_TASK_PATH } from "../../app/paths";
 
 
 const CatalogPage: React.FC = () => {
-    const {data: tasks, isLoading: isTasksLoading} = useTasks()
-
+    const {data: tasks, isLoading: isTasksLoading} = useTasks();
+    const navigate = useNavigate();
 
     return (
         <div>
             <Group mb={"md"}>
-                {
-                    isTasksLoading
-                    ? <Skeleton h={"36px"} w="400px" radius="md" />
-                    : <Title h={"36px"} order={2}>Каталог заданий</Title>
-                }
+                <Title h={"36px"} order={2}>Каталог заданий</Title>
+            </Group>
+            <Group mb={"md"}>
+                <Button onClick={() => navigate(NEW_TASK_PATH)} size="xs">
+                    Создать новую
+                </Button>
             </Group>
             <Grid>
                 {
