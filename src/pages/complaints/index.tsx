@@ -66,7 +66,6 @@ const ComplaintModal: React.FC<ComplaintModalProps> = ({currentComplaint, onSave
                             label="Написать ответ"
                             placeholder="Начните писать здесь"
                             variant="filled"
-                            error={teacherResponse === ""? "Ответ не может быть пустым": ""}
                             value={teacherResponse}
                             onChange={e => setTeacherResponse(e.currentTarget.value)}
                         />
@@ -143,9 +142,12 @@ const ComplaintsPage: React.FC = () => {
                     <Text lineClamp={1}>{record.studentRequest}</Text>
                 ) },
             { accessor: 'teacherResponse', title: "Ответ", resizable: true,
-                render: record => (
-                    <Text lineClamp={1}>{record.teacherResponse}</Text>
-                ) 
+                render: record => {
+                    if (record.teacherResponse === ""){
+                        return <Text fw="bold" c="yellow"> Ожидает </Text>
+                    }
+                    return <Text lineClamp={1}> {record.teacherResponse} </Text>
+                } 
             },
         ],
       });
@@ -161,7 +163,7 @@ const ComplaintsPage: React.FC = () => {
                 />
             </Modal>
             <Stack>
-                <Title h={"36px"} order={2}>Каталог жалоб</Title>
+                <Title h={"36px"} order={2}>Вопросы студентов</Title>
                 <Group>
                     <Button onClick={() => refetchComplaints()} size="xs">
                         Обновить

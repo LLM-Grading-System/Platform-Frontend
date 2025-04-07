@@ -7,6 +7,7 @@ import {
     IconMoon,
     IconStack2,
     IconMailQuestion,
+    IconUsers,
   } from '@tabler/icons-react';
 import { Outlet } from "react-router";
 import classes from "./index.module.css";
@@ -14,13 +15,14 @@ import { Container, ScrollArea, Stack } from "@mantine/core";
 import NavbarLink from "../../components/navbar-link";
 import { useMantineColorScheme, useComputedColorScheme } from '@mantine/core';
 import TokenService from "../../services/localStorage/auth-token";
-import { COMPLAINTS_PATH, HOME_PATH, LOGIN_PATH, TASKS_PATH } from "../../app/paths";
+import { COMPLAINTS_PATH, HOME_PATH, LOGIN_PATH, STUDENTS_PATH, TASKS_PATH } from "../../app/paths";
 
 
 const mockdata = [
     { icon: IconHome2, label: 'Главная', path: HOME_PATH, index: true },
     { icon: IconStack2, label: 'Задачи', path: TASKS_PATH, index: false},
-    { icon: IconMailQuestion, label: 'Жалобы', path: COMPLAINTS_PATH, index: false }
+    { icon: IconMailQuestion, label: 'Жалобы', path: COMPLAINTS_PATH, index: false },
+    { icon: IconUsers, label: 'Студенты', path: STUDENTS_PATH, index: false }
   ];
 
 interface BaseLayoutProps {
